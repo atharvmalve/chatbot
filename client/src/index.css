@@ -10,7 +10,33 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
     font-family: 'SF Pro Display', system-ui, sans-serif;
-    background-color: #FAF9F7;
+  }
+
+  .light {
+    --background: #FAF9F6;
+    --foreground: #1A1A1A;
+  }
+
+  .dark {
+    --background: #121212;
+    --foreground: #FAFAFA;
+  }
+
+  :root {
+    --primary: #A91113;
+    --user-message-bg: #FFD5D5;
+    --bot-message-bg: #F2F2F2;
+    --bot-message-dark-bg: #2A2A2A;
+  }
+
+  html.dark {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  html.light {
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
 
