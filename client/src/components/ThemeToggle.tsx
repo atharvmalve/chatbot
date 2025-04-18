@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, PlusCircle } from "lucide-react";
 
-const ThemeToggle = () => {
+interface ThemeToggleProps {
+  onNewChat?: () => void;
+}
+
+const ThemeToggle = ({ onNewChat }: ThemeToggleProps) => {
   const [isDark, setIsDark] = useState(
     () => localStorage.getItem("theme") === "dark" || 
     (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches)
@@ -26,17 +30,29 @@ const ThemeToggle = () => {
   };
 
   return (
-    <button
-      onClick={toggleTheme}
-      className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
-      aria-label="Toggle theme"
-    >
-      {isDark ? (
-        <Sun className="h-5 w-5 text-yellow-400" />
-      ) : (
-        <Moon className="h-5 w-5 text-gray-700" />
+    <div className="flex items-center gap-1">
+      {onNewChat && (
+        <button
+          onClick={onNewChat}
+          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 ease-in-out"
+          aria-label="New chat"
+        >
+          <PlusCircle className="h-5 w-5 text-primary" />
+        </button>
       )}
-    </button>
+      
+      <button
+        onClick={toggleTheme}
+        className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 ease-in-out"
+        aria-label="Toggle theme"
+      >
+        {isDark ? (
+          <Sun className="h-5 w-5 text-gray-200" />
+        ) : (
+          <Moon className="h-5 w-5 text-gray-700" />
+        )}
+      </button>
+    </div>
   );
 };
 

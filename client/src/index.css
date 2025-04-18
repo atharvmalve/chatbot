@@ -9,7 +9,7 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    font-family: 'SF Pro Display', system-ui, sans-serif;
+    font-family: 'Schibsted Grotesk', system-ui, sans-serif;
   }
 
   .light {
@@ -18,15 +18,21 @@
   }
 
   .dark {
-    --background: #121212;
-    --foreground: #FAFAFA;
+    --background: #18181B; /* Zinc-900 */
+    --foreground: #F4F4F5; /* Zinc-100 */
   }
 
   :root {
     --primary: #A91113;
     --user-message-bg: #FFD5D5;
-    --bot-message-bg: #F2F2F2;
-    --bot-message-dark-bg: #2A2A2A;
+    --user-message-dark-bg: #3F3F46; /* Zinc-700 */
+    --bot-message-bg: #F0F0F0;
+    --bot-message-dark-bg: #27272A; /* Zinc-800 */
+    
+    /* Transition durations */
+    --transition-fast: 150ms;
+    --transition-medium: 250ms;
+    --transition-slow: 350ms;
   }
 
   html.dark {
