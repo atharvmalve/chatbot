@@ -43,7 +43,7 @@ const WelcomeView = ({ onSendMessage, onFirstMessage }: WelcomeViewProps) => {
           <img 
             src={iagoLogo} 
             alt="Iago" 
-            className="w-full h-full object-contain animate-pulse" 
+            className="w-full h-full object-contain" 
           />
         </div>
         
@@ -51,7 +51,7 @@ const WelcomeView = ({ onSendMessage, onFirstMessage }: WelcomeViewProps) => {
           Meet Iago
         </h1>
         
-        <p className="text-lg text-gray-700 dark:text-gray-300">
+        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
           Your Clever AI Sidekick, Ready to Dive into Articles, Web Data, and Complex Prompts in Seconds.
         </p>
       </div>
@@ -63,12 +63,19 @@ const WelcomeView = ({ onSendMessage, onFirstMessage }: WelcomeViewProps) => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Ask me anything or paste a URL..."
-            className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full py-4 pl-6 pr-14 text-gray-900 dark:text-gray-100 shadow-lg focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+            className="w-full bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 
+              rounded-full py-4 pl-6 pr-14 text-gray-900 dark:text-gray-100 
+              shadow-lg focus:ring-2 focus:ring-primary focus:outline-none 
+              transition-all duration-300 ease-in-out"
+            autoFocus
           />
           <button
             type="submit"
             disabled={!inputValue.trim()}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary p-2 
+              rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 
+              transition-all duration-200 ease-in-out
+              disabled:opacity-50 hover:scale-105 active:scale-95"
           >
             <ArrowRightCircle className="w-6 h-6" />
           </button>

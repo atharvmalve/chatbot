@@ -61,9 +61,22 @@ const ChatUI = () => {
     }
   };
 
+  const handleNewChat = () => {
+    // Reset messages to just the welcome message
+    setMessages([{
+      id: uuidv4(),
+      content: WELCOME_MESSAGE,
+      sender: "bot",
+      timestamp: Date.now()
+    }]);
+    
+    // Reset error state
+    setError(null);
+  };
+
   return (
-    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[var(--background)] transition-colors">
-      <ChatHeader />
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[var(--background)] transition-colors duration-300">
+      <ChatHeader onNewChat={handleNewChat} />
       
       {isFirstVisit ? (
         <WelcomeView 

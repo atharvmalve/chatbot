@@ -12,6 +12,7 @@ interface MessageInputProps {
 
 const MessageInput = ({ onSendMessage, setIsLoading, setError }: MessageInputProps) => {
   const [inputValue, setInputValue] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus the input field on component mount
@@ -65,11 +66,16 @@ const MessageInput = ({ onSendMessage, setIsLoading, setError }: MessageInputPro
     } finally {
       // Clear loading state
       setIsLoading(false);
+      
+      // Refocus the input after response is received
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-4 md:p-6 transition-colors">
+    <div className="bg-white dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 p-4 md:p-6 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
           <div className="flex-1 relative">
@@ -78,10 +84,15 @@ const MessageInput = ({ onSendMessage, setIsLoading, setError }: MessageInputPro
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-700 rounded-full py-3 pl-4 pr-10 text-sm md:text-base 
-                bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 
-                focus:bg-white dark:focus:bg-gray-700 transition-colors 
-                focus:ring-2 focus:ring-primary focus:outline-none"
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              className={`w-full border ${isFocused ? 'border-primary' : 'border-gray-300 dark:border-zinc-700'} 
+                rounded-full py-3 pl-4 pr-10 text-sm md:text-base 
+                bg-gray-50 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 
+                focus:bg-white dark:focus:bg-zinc-700 
+                focus:ring-2 focus:ring-primary focus:outline-none
+                transition-all duration-300 ease-in-out
+                shadow-sm hover:shadow-md focus:shadow-md`}
               placeholder="Ask Iago anything or paste a URL..."
               required
             />
@@ -89,9 +100,12 @@ const MessageInput = ({ onSendMessage, setIsLoading, setError }: MessageInputPro
           <button 
             type="submit" 
             disabled={!inputValue.trim()}
-            className="bg-primary text-white rounded-full p-3 hover:bg-opacity-90 focus:outline-none 
-              focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-all send-button
-              disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-primary text-white rounded-full p-3 
+              hover:bg-opacity-90 focus:outline-none 
+              focus:ring-2 focus:ring-primary focus:ring-opacity-50 
+              transition-all duration-200 ease-in-out
+              disabled:opacity-50 disabled:cursor-not-allowed
+              hover:scale-105 active:scale-95 hover:shadow-md"
           >
             <Send className="w-5 h-5" />
           </button>
