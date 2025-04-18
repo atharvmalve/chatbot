@@ -62,14 +62,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const systemPrompt = `
 You are a smart agent that can answer using:
-- 🧠 MEMORY: your own brain
-- 📄 ARTICLE: recent article provided
-- 🔍 SEARCH: real-time web search
+-  MEMORY: your own brain
+-  ARTICLE: recent article provided
+-  SEARCH: real-time web search
 
 Reply in one of the formats:
-- 🔍 SEARCH: [query here] → if you need a web search to help
-- 📄 ARTICLE: [answer] → if article is enough
-- 🧠 MEMORY: [answer] → if your knowledge is enough
+-  [query here] → if you need a web search to help
+- [answer] → if article is enough
+-  [answer] → if your knowledge is enough
 `;
 
       const userMessage = `

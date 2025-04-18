@@ -79,10 +79,18 @@ const ChatUI = () => {
       <ChatHeader onNewChat={handleNewChat} />
       
       {isFirstVisit ? (
-        <WelcomeView 
-          onSendMessage={addMessage} 
-          onFirstMessage={handleFirstMessage} 
+        <>
+        <MessagesContainer 
+          messages={messages} 
+          isLoading={isLoading} 
+          error={error}
         />
+        <MessageInput 
+          onSendMessage={addMessage} 
+          setIsLoading={setIsLoading} 
+          setError={setError}
+        />
+      </>
       ) : (
         <>
           <MessagesContainer 
