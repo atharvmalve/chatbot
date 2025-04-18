@@ -1,0 +1,127 @@
+const express = require('express');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const axios = require('axios');
+const cheerio = require('cheerio');
+const bodyParser = require('body-parser');
+// const app = express();
+
+const app = express();
+const PORT = 3000;
+
+const OPENROUTER_API_KEY = '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';
+const SERP_API_KEY = '4de277c8461c5629c67f1d870fac2c57cd86ba8978b63425fa499649729cf7b8';
+
+let savedArticle = { url: '', content: '' };
+
+app.use(bodyParser.json());
+
+async function extractTextFromURL(url) {
+    const rawHTML = await fetch(url).then(r => r.text());
+    const $ = cheerio.load(rawHTML);
+  
+    // Extract title
+    const title = $('title').text().trim();
+  
+    // Try to get abstract
+    const abstract =
+      $('[class*="abstract"]').text().trim() ||
+      $('[id*="abstract"]').text().trim() ||
+      '';
+  
+    // Extract main text (cut if too long)
+    const bodyText = $('p').text().trim().replace(/\s+/g, ' ').slice(0, 8000);
+  
+    return `${title ? `Title: ${title}\n` : ''}${abstract ? `Abstract: ${abstract}\n` : ''}${bodyText ? `Content:\n${bodyText}` : ''}`;
+  }
+  
+
+async function searchWeb(query) {
+  const url = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}&engine=google`;
+  const res = await axios.get(url);
+  const results = res.data.organic_results || [];
+  return results.map(r => `- ${r.title}: ${r.snippet}`).join('\n');
+}
+
+app.post('/chat', async (req, res) => {
+    const { prompt } = req.body;
+  
+    try {
+      const urlMatch = prompt.match(/https?:\/\/[^\s]+/);
+      const url = urlMatch ? urlMatch[0] : null;
+  
+      if (url) {
+        const article = await extractTextFromURL(url);
+        savedArticle = { url, content: article };
+      }
+  
+      const systemPrompt = `
+  You are a smart agent that can answer using:
+  - 🧠 MEMORY: your own brain
+  - 📄 ARTICLE: recent article provided
+  - 🔍 SEARCH: real-time web search
+  
+  Reply in one of the formats:
+  - 🔍 SEARCH: [query here] → if you need a web search to help
+  - 📄 ARTICLE: [answer] → if article is enough
+  - 🧠 MEMORY: [answer] → if your knowledge is enough
+  `;
+  
+      const userMessage = `
+  ${savedArticle.content ? `Article:\n${savedArticle.content}\n\n` : ''}
+  User: ${prompt}
+  `;
+  
+      const openrouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'mistralai/mixtral-8x7b-instruct',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userMessage }
+          ]
+        })
+      });
+  
+      const firstReply = await openrouterRes.json();
+      const replyContent = firstReply.choices?.[0]?.message?.content || '';
+  
+      // If it asks for search, run it
+      if (replyContent.startsWith('🔍 SEARCH:')) {
+        const query = replyContent.replace('🔍 SEARCH:', '').trim();
+        const searchResults = await searchWeb(query);
+  
+        const finalReply = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'mistralai/mixtral-8x7b-instruct',
+            messages: [
+              { role: 'system', content: 'You received this web search. Use it to answer the original question.' },
+              { role: 'user', content: `Search results:\n${searchResults}\n\nOriginal question: ${prompt}` }
+            ]
+          })
+        });
+  
+        const finalData = await finalReply.json();
+        return res.json({ response: finalData.choices?.[0]?.message?.content || 'Error' });
+      }
+  
+      return res.json({ response: replyContent });
+  
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Something went wrong.' });
+    }
+  });
+  
+
+app.listen(PORT, () => {
+  console.log(`Cuterock AI agent is running at http://localhost:${PORT}`);
+});
